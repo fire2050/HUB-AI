@@ -1,0 +1,12 @@
+{
+  "name": "product-wuying-pc",
+  "version": "1.0.0",
+  "author": "AI+比特虾",
+  "description": "无影云电脑产品报价 Skill",
+  "entry": "scripts/",
+  "dependencies": ["hubai-base"],
+  "python_version": ">=3.8",
+  "product_code": "wuying-pc",
+  "product_name": "无影云电脑",
+  "category": "computing"
+}

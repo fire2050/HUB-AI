@@ -1,0 +1,49 @@
+{
+  "product_code": "wuying-pc",
+  "product_name": "无影云电脑",
+  "templates": [
+    {
+      "code": "welcome",
+      "name": "欢迎话术",
+      "text": "您好！我是无影云电脑报价助手 💻\n\n报价前请先确认本次是【单品查询】还是【方案报价】：\n\n1️⃣ 单品查询：按云产品资源配置/硬件设备/产品名称直接查价。\n2️⃣ 方案报价：需要补齐需求清单必要项后再报价，其中【休眠方式】为报价前必须询问并确认的必要项。\n\n说明：系统按报价数据源原价报价，不做折扣。",
+      "variables": []
+    },
+    {
+      "code": "ask_quotation_type",
+      "name": "报价类型确认",
+      "text": "请先确认本次是【单品查询】还是【方案报价】：\n\n1️⃣ 单品查询：按云产品资源配置/硬件设备/产品名称直接查询刊例价或配置价格。\n2️⃣ 方案报价：需要先补齐需求清单必要项，再生成完整报价；其中【休眠方式】必须在报价前询问并确认。\n\n说明：系统按报价数据源原价报价，不做折扣。",
+      "variables": []
+    },
+    {
+      "code": "ask_requirement",
+      "name": "字段追问",
+      "text": "为了给您更精准的报价，还需要了解：{{field_name}}\n\n{{field_description}}",
+      "variables": [
+        "field_name",
+        "field_description"
+      ]
+    },
+    {
+      "code": "summary",
+      "name": "需求汇总",
+      "text": "📋 无影云电脑方案报价需求清单\n\n{{summary_data}}\n\n请确认以上必要项，尤其是【休眠方式】无误后，我将按报价数据源原价生成报价方案，不做折扣。如需修改请直接告知。",
+      "variables": [
+        "summary_data"
+      ]
+    },
+    {
+      "code": "no_product_detected",
+      "name": "未检测到产品",
+      "text": "您好！我可以为您提供以下产品线/产品的报价服务：\n\n☁️ 云计算\n💻 无影云电脑\n\n请告诉我您需要哪个产品的报价？或者描述您的需求，我来帮您判断。",
+      "variables": []
+    },
+    {
+      "code": "quotation_ready",
+      "name": "报价完成",
+      "text": "✅ 无影云电脑报价已生成！\n\n{{quotation_summary}}\n\n说明：本报价按报价数据源原价计算，不做折扣。如需调整或有其他需求，请随时告知。",
+      "variables": [
+        "quotation_summary"
+      ]
+    }
+  ]
+}

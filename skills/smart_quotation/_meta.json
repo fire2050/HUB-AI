@@ -1,0 +1,9 @@
+{
+  "name": "smart-quotation",
+  "version": "1.0.0",
+  "author": "AI+比特虾",
+  "description": "HubAI 智能报价核心 Skill",
+  "entry": "scripts/",
+  "dependencies": ["hubai-base"],
+  "python_version": ">=3.8"
+}

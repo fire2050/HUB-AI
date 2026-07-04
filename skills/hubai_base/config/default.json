@@ -1,0 +1,23 @@
+{
+  "database": {
+    "default": {
+      "type": "sqlite",
+      "path": "~/hubai/workspace/data/hubai.db"
+    }
+  },
+  "quotation": {
+    "max_discount_rate": 0.9,
+    "min_margin_rate": 0.15,
+    "validity_days": 30,
+    "auto_approve_threshold": 0.2
+  },
+  "approval": {
+    "auto_approve_threshold": 0.2,
+    "escalation_hours": 24
+  },
+  "logging": {
+    "level": "INFO",
+    "max_file_size_mb": 100,
+    "backup_count": 10
+  }
+}

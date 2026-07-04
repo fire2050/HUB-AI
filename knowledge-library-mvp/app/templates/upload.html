@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HubAI 原始数据上传</title>
+  <link rel="stylesheet" href="/static/style.css?v=202606241141" />
+</head>
+<body>
+  <main class="shell">
+    <section class="hero hub-hero">
+      <div>
+        <p class="eyebrow">HubAI Data Intake</p>
+        <h1>原始数据上传中心</h1>
+        <p class="subtitle">支持手动选择资料类型，也支持按文件名自动判断存储路径。基础版使用规则判断，后续可接入本地 Qwen 做复杂表头/内容识别。</p>
+      </div>
+      <div class="status-badge">📁 Upload Root: {{ upload_root }}</div>
+    </section>
+
+    <section class="panel upload-layout">
+      <div>
+        <h2>1. 选择资料类型 / 存储路径</h2>
+        <p class="muted">推荐选择“自动判断路径”。如果文件名包含“报价/价格/库存/商业版”等关键词，会自动落到 <b>原始数据/03-报价库存</b>。</p>
+
+        <div class="upload-mode-box">
+          <label class="radio-card active" id="autoModeCard">
+            <input type="radio" name="mode" value="auto" checked onchange="setMode('auto')" />
+            <strong>自动判断路径</strong>
+            <small>根据文件名关键词判断：报价/价格/库存 → 报价库存；产品/规格 → 产品主数据；财务/预算 → 财务报表。</small>
+          </label>
+          <label class="radio-card" id="manualModeCard">
+            <input type="radio" name="mode" value="manual" onchange="setMode('manual')" />
+            <strong>手动选择路径</strong>
+            <small>适合文件名不规范、混合资料或需要指定知识库目录的情况。</small>
+          </label>
+        </div>
+
+        <div class="storage-list" id="storageList">
+          <button class="storage-item active" data-key="auto" onclick="selectStorage('auto')">
+            <strong>自动判断路径</strong>
+            <small>auto</small>
+            <span>由系统按文件名关键词自动判断最终路径。</span>
+          </button>
+          {% for key, item in storage_paths.items() %}
+            <button class="storage-item" data-key="{{ key }}" onclick="selectStorage('{{ key }}')">
+              <strong>{{ item.label }}</strong>
+              <small>{{ item.path }}</small>
+              <span>{{ item.desc }}</span>
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="upload-card">
+        <h2>2. 上传文件</h2>
+        <p class="muted" id="selectedPathText">当前模式：自动判断路径</p>
+        <form id="uploadForm">
+          <input type="hidden" id="storageKey" name="storage_key" value="auto" />
+          <label>文件</label>
+          <input type="file" id="file" name="file" required onchange="previewInfer()" />
+          <div class="infer-preview" id="inferPreview">请选择文件，系统会预判存储路径。</div>
+          <label class="checkline">
+            <input type="checkbox" id="autoImport" name="auto_import" checked />
+            <span>产品/报价 CSV 上传后自动入库更新</span>
+          </label>
+          <button type="submit">上传到选定路径</button>
+        </form>
+        <pre id="uploadResult">等待上传...</pre>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>路径判断规则</h2>
+      <div class="path-matrix">
+        <div><strong>报价/商务</strong><span>报价、价格、价目、库存、stock、inventory、折扣、商业版、订单、合同 → 原始数据/03-报价库存</span></div>
+        <div><strong>产品主数据</strong><span>产品、product、SKU、清单、规格、参数、型号、FAQ → 原始数据/02-产品主数据</span></div>
+        <div><strong>财务报表</strong><span>财务、销售额、回款、预算、利润、报表、finance、budget → 原始数据/01-财务报表</span></div>
+        <div><strong>博文资料</strong><span>博文、文章、悟空、素材、选题、blog、article → 原始数据/04-博文资料</span></div>
+        <div><strong>技术资料</strong><span>技术、方案、部署、API、接口、实施、故障 → 企业知识库/05-技术知识库</span></div>
+        <div><strong>默认</strong><span>无法识别时默认进入原始数据/02-产品主数据，避免误放到知识库正式区。</span></div>
+      </div>
+      <p class="muted"><b>关于本地 Qwen：</b>当前路径分类是低复杂度任务，规则判断可解释、成本低、稳定性高，暂不建议引入本地 Qwen。若后续要解析 Excel 多 Sheet、识别字段语义、自动映射价格/库存/产品表，再引入 Ollama + Qwen2.5 更合适。</p>
+      <p><a href="/">← 返回数字员工工作台</a>　<a href="/docs">API 文档</a></p>
+    </section>
+  </main>
+
+<script>
+const storagePaths = {{ storage_paths | tojson }};
+let selectedKey = 'auto';
+function setMode(mode) {
+  document.getElementById('autoModeCard').classList.toggle('active', mode === 'auto');
+  document.getElementById('manualModeCard').classList.toggle('active', mode === 'manual');
+  if (mode === 'auto') selectStorage('auto');
+}
+function selectStorage(key) {
+  selectedKey = key;
+  document.getElementById('storageKey').value = key;
+  document.querySelectorAll('.storage-item').forEach(item => item.classList.toggle('active', item.dataset.key === key));
+  if (key === 'auto') {
+    document.getElementById('selectedPathText').textContent = '当前模式：自动判断路径';
+  } else {
+    const item = storagePaths[key];
+    document.getElementById('selectedPathText').textContent = `当前路径：${item.path}（${item.label}）`;
+    document.querySelector('input[name="mode"][value="manual"]').checked = true;
+    setMode('manual');
+  }
+  previewInfer();
+}
+function inferByName(filename) {
+  const name = (filename || '').toLowerCase();
+  const has = words => words.some(w => name.includes(w));
+  if (has(['报价','价格','价目','price','quotation','quote','库存','inventory','stock','折扣','discount','商业版','订单','合同'])) return ['raw_quotation', '原始数据/03-报价库存', '命中文件名：报价/价格/库存/商业版'];
+  if (has(['财务','销售额','回款','预算','利润','报表','finance','sales','budget'])) return ['raw_finance', '原始数据/01-财务报表', '命中文件名：财务/预算/报表'];
+  if (has(['博文','文章','悟空','素材','选题','blog','article'])) return ['raw_blog', '原始数据/04-博文资料', '命中文件名：博文/文章/悟空'];
+  if (has(['技术','方案','部署','api','接口','实施','故障'])) return ['tech', '企业知识库/05-技术知识库', '命中文件名：技术/方案/部署'];
+  if (has(['产品','product','sku','清单','规格','参数','型号','faq'])) return ['raw_product', '原始数据/02-产品主数据', '命中文件名：产品/清单/规格'];
+  return ['raw_product', '原始数据/02-产品主数据', '未识别，默认产品主数据'];
+}
+function previewInfer() {
+  const file = document.getElementById('file').files[0];
+  const preview = document.getElementById('inferPreview');
+  if (!file) { preview.textContent = '请选择文件，系统会预判存储路径。'; return; }
+  if (selectedKey !== 'auto') {
+    preview.textContent = `手动模式：将上传到 ${storagePaths[selectedKey].path}`;
+    return;
+  }
+  const [key, path, reason] = inferByName(file.name);
+  preview.textContent = `自动预判：${path}（${reason}）`;
+}
+
+document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = new FormData();
+  const file = document.getElementById('file').files[0];
+  if (!file) return;
+  form.append('file', file);
+  form.append('storage_key', document.getElementById('storageKey').value);
+  form.append('auto_import', document.getElementById('autoImport').checked ? 'true' : 'false');
+  document.getElementById('uploadResult').textContent = '上传中...';
+  const resp = await fetch('/api/storage/upload', {method: 'POST', body: form});
+  const data = await resp.json();
+  document.getElementById('uploadResult').textContent = JSON.stringify(data, null, 2);
+});
+selectStorage('auto');
+</script>
+</body>
+</html>

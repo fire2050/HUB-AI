@@ -1,0 +1,300 @@
+{
+  "product_code": "wuying-pc",
+  "product_name": "无影云电脑",
+  "version": "1.3.0",
+  "categories": [
+    "基础信息",
+    "配置需求",
+    "用户需求",
+    "部署需求",
+    "商务需求"
+  ],
+  "fields": [
+    {
+      "field_code": "quotation_type",
+      "field_name": "报价类型",
+      "field_type": "select",
+      "required": true,
+      "priority": 0,
+      "category": "基础信息",
+      "options": [
+        "单品查询",
+        "方案报价"
+      ],
+      "description": "报价前必须先确认：单品查询或方案报价。单品查询可按配置/产品名称直接查价；方案报价必须先确认需求清单必要项。"
+    },
+    {
+      "field_code": "project_name",
+      "field_name": "项目名称",
+      "field_type": "text",
+      "required": true,
+      "priority": 1,
+      "category": "基础信息",
+      "description": "项目需求报价必填，用于客户需求表三与后续报价单归档。单品查询不需要。"
+    },
+    {
+      "field_code": "customer_company",
+      "field_name": "客户公司名称",
+      "field_type": "text",
+      "required": true,
+      "priority": 1,
+      "category": "基础信息",
+      "description": "请提供客户公司全称"
+    },
+    {
+      "field_code": "contact_person",
+      "field_name": "联系人姓名",
+      "field_type": "text",
+      "required": true,
+      "priority": 1,
+      "category": "基础信息",
+      "description": "联系人姓名和电话"
+    },
+    {
+      "field_code": "contact_phone",
+      "field_name": "联系方式",
+      "field_type": "text",
+      "required": true,
+      "priority": 1,
+      "category": "基础信息",
+      "description": "项目需求报价必填，联系人电话或邮箱至少填写一种。"
+    },
+    {
+      "field_code": "raw_requirement",
+      "field_name": "客户原始需求",
+      "field_type": "textarea",
+      "required": true,
+      "priority": 1,
+      "category": "基础信息",
+      "description": "客户/销售原始表达必须保留，用于AI摘要、需求卡和追问。"
+    },
+    {
+      "field_code": "deployment_scale",
+      "field_name": "部署规模",
+      "field_type": "select",
+      "required": true,
+      "priority": 1,
+      "category": "配置需求",
+      "options": [
+        "10点以下",
+        "10-50点",
+        "50-100点",
+        "100-300点",
+        "300点以上"
+      ],
+      "description": "预计部署规模，无影云电脑适合小规模灵活部署"
+    },
+    {
+      "field_code": "required_quantity",
+      "field_name": "需求数量",
+      "field_type": "number",
+      "required": true,
+      "priority": 1,
+      "category": "配置需求",
+      "description": "项目需求报价必填，表示用户数/点位数/台数，必须大于0。"
+    },
+    {
+      "field_code": "usage_scenario",
+      "field_name": "使用场景",
+      "field_type": "multiselect",
+      "required": true,
+      "priority": 1,
+      "category": "配置需求",
+      "options": [
+        "安全办公",
+        "教育培训",
+        "研发设计",
+        "数字人&媒体运营",
+        "AI agents",
+        "其他"
+      ],
+      "description": "使用场景仅允许选择：安全办公、教育培训、研发设计、数字人&媒体运营、AI agents、其他；不得私自添加或修改，如需变更必须先确认。"
+    },
+    {
+      "field_code": "performance_level",
+      "field_name": "云产品资源配置",
+      "field_type": "select",
+      "required": true,
+      "priority": 2,
+      "category": "配置需求",
+      "options": [
+        "办公型标准型-4核8G内存30M带宽（支持24小时开机）",
+        "办公型增强型-6核12G内存30M带宽（支持24小时开机）",
+        "办公型高级型-8核16G内存30M带宽（支持24小时开机）",
+        "图形型-6核12G内存2G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-8核16G内存2G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-8核16G内存4G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-16核32G内存8G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-16核32G内存12G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-32核64G内存12G显存(5880)30M带宽（支持24小时开机）",
+        "办公型旗舰型-8核16G内存30M带宽（支持24小时开机）",
+        "图形型-4核8G内存2G显存(5880)30M带宽（支持24小时开机）",
+        "办公型标准型-4核8G内存30M带宽（无强制休眠策略）",
+        "办公型增强型-6核12G内存30M带宽（无强制休眠策略）",
+        "办公型高级型-8核16G内存30M带宽（无强制休眠策略）",
+        "办公型旗舰型-16核32G内存30M带宽（无强制休眠策略）",
+        "办公型旗舰型-16核32G内存30M带宽（支持24小时开机）",
+        "图形型-32核64G内存16G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-32核64G内存24G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-64核128G内存24G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-32核64G内存48G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-64核128G内存48G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-64核256G内存48G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-64核256G内存96G显存(5880)30M带宽（支持24小时开机）",
+        "图形型-96核384G内存192G显存(5880)30M带宽（支持24小时开机）"
+      ],
+      "description": "对应报价数据源字段“国内region计算规格名称”，选项从无影报价数据源自动同步；不得私自添加或修改。"
+    },
+    {
+      "field_code": "duration_type",
+      "field_name": "时长类型",
+      "field_type": "select",
+      "required": true,
+      "priority": 2,
+      "category": "配置需求",
+      "options": [
+        "120小时",
+        "200小时",
+        "不限时长（1小时休眠）",
+        "不限时长",
+        "教育办公"
+      ],
+      "description": "项目需求报价必填。不同于单品查询的追问，本字段必须进入客户需求表三，后续报价按该时长类型计算。"
+    },
+    {
+      "field_code": "sleep_policy",
+      "field_name": "休眠方式",
+      "field_type": "select",
+      "required": true,
+      "priority": 2,
+      "category": "配置需求",
+      "options": [
+        "支持24小时开机",
+        "无强制休眠策略"
+      ],
+      "description": "方案报价前必须询问并确认。对应“云产品资源配置”字段中中文括号“（）”内的休眠策略内容；选项从云产品资源配置自动提取，不得私自添加或修改。"
+    },
+    {
+      "field_code": "device_type",
+      "field_name": "硬件设备",
+      "field_type": "multiselect",
+      "required": false,
+      "priority": 2,
+      "category": "用户需求",
+      "options": [
+        "无影魔方AS05（推荐）",
+        "无影魔方Ultra-AX01",
+        "硬件终端一体机US01",
+        "无影方舟笔记本-NE01（推荐）",
+        "无影魔方Pro-AS06",
+        "硬件终端一体机US05（推荐）",
+        "无影方舟笔记本Pro-NS01",
+        "XC01信创终端",
+        "AXC01信创终端",
+        "不需要网关",
+        "无影网关AL88-60（可选）",
+        "无影网关AL88-200（可选）",
+        "无影网关AL88-300（可选）",
+        "无影网关AL88-400（可选）"
+      ],
+      "description": "硬件设备选项来自数据源 sheet“C0-终端描述汇总”的“终端规格”；硬件报价推荐优先级：无影魔方AS05（推荐）→ 无影魔方Ultra-AX01 → 硬件终端一体机US01 → 无影方舟笔记本-NE01（推荐）。不得私自添加或修改。"
+    },
+    {
+      "field_code": "cloud_storage",
+      "field_name": "云盘需求",
+      "field_type": "select",
+      "required": false,
+      "priority": 3,
+      "category": "用户需求",
+      "options": [
+        "100GB/用户",
+        "不需要",
+        "暂不确定"
+      ],
+      "description": "云盘存储空间需求。当前报价数据源明确给出“国内增加磁盘（可选）/GiB”100GiB月价；未明确容量不估算。"
+    },
+    {
+      "field_code": "data_security",
+      "field_name": "数据安全需求",
+      "field_type": "multiselect",
+      "required": false,
+      "priority": 3,
+      "category": "用户需求",
+      "options": [
+        "屏幕水印防拍照",
+        "禁止文件外发",
+        "USB外设管控",
+        "操作录屏审计",
+        "多因素认证",
+        "IP白名单",
+        "不需要特殊安全"
+      ],
+      "description": "数据安全和管控需求"
+    },
+    {
+      "field_code": "budget_range",
+      "field_name": "预算范围",
+      "field_type": "select",
+      "required": false,
+      "priority": 3,
+      "category": "商务需求",
+      "options": [
+        "1万以下",
+        "1-3万",
+        "3-10万",
+        "10-30万",
+        "30万以上",
+        "暂不确定"
+      ],
+      "description": "预算范围"
+    },
+    {
+      "field_code": "timeline",
+      "field_name": "期望交付时间",
+      "field_type": "select",
+      "required": false,
+      "priority": 3,
+      "category": "商务需求",
+      "options": [
+        "3天内",
+        "1周内",
+        "1个月内",
+        "1-3个月",
+        "暂不确定"
+      ],
+      "description": "期望交付时间"
+    },
+    {
+      "field_code": "payment_terms",
+      "field_name": "付款方式",
+      "field_type": "select",
+      "required": true,
+      "priority": 3,
+      "category": "商务需求",
+      "options": [
+        "标准付款",
+        "预付30%",
+        "预付50%",
+        "月结30天",
+        "月结60天",
+        "其他/需审批"
+      ],
+      "description": "项目需求报价建议必填，用于账期风险和审批判断。"
+    },
+    {
+      "field_code": "output_type",
+      "field_name": "输出类型",
+      "field_type": "select",
+      "required": true,
+      "priority": 3,
+      "category": "商务需求",
+      "options": [
+        "仅报价单",
+        "仅方案",
+        "方案+报价单"
+      ],
+      "description": "项目需求报价必填，决定后续生成方案草稿、报价草稿或两者。"
+    }
+  ],
+  "project_requirement_rule": "单品报价解决的是查价格；项目需求报价解决的是正式客户报价流程。客户/项目/方案/P0/正式报价必须先进入客户需求表三。"
+}

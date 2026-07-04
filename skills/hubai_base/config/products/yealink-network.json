@@ -1,0 +1,22 @@
+{
+  "code": "yealink-network",
+  "name": "亿联网络",
+  "category": "communication",
+  "category_name": "通信设备",
+  "skill_name": "product-yealink-network",
+  "priority": 80,
+  "keywords": [
+    "亿联",
+    "yealink",
+    "亿联网络",
+    "视频会议",
+    "电话会议",
+    "会议终端",
+    "ip电话",
+    "话机"
+  ],
+  "description": "亿联网络音视频会议系统解决方案",
+  "database_table": "product_yealink_network",
+  "pricing_model": "device-list-service",
+  "version": "1.0.0"
+}
