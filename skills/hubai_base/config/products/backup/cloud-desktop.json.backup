@@ -1,0 +1,18 @@
+{
+  "code": "cloud-desktop",
+  "name": "云桌面",
+  "skill_name": "product-cloud-desktop",
+  "category": "computing",
+  "priority": 100,
+  "keywords": [
+    "云桌面",
+    "cloud desktop",
+    "企业云桌面",
+    "桌面云",
+    "云电脑",
+    "vdi",
+    "VDI"
+  ],
+  "description": "企业级云桌面解决方案",
+  "version": "1.0.0"
+}

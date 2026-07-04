@@ -1,0 +1,21 @@
+{
+  "code": "system-integration",
+  "name": "系统集成项目",
+  "category": "system-integration",
+  "category_name": "系统集成",
+  "skill_name": "product-system-integration",
+  "priority": 50,
+  "keywords": [
+    "系统集成",
+    "集成项目",
+    "项目实施",
+    "系统集成项目",
+    "it集成",
+    "弱电集成",
+    "智能化集成"
+  ],
+  "description": "系统集成项目解决方案",
+  "database_table": "product_system_integration",
+  "pricing_model": "bom-management",
+  "version": "1.0.0"
+}

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.env.*
+
+# Databases (do not commit runtime data)
+*.db
+*.db.bak_*
+*.sqlite
+*.sqlite3
+
+# Backups
+*.bak_*
+*.orig
+.trash/
+
+# Logs & caches
+logs/
+*.log
+.pytest_cache/
+.mypy_cache/
+reports/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/

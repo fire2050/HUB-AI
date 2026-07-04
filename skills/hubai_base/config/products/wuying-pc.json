@@ -1,0 +1,22 @@
+{
+  "code": "wuying-pc",
+  "name": "无影云电脑",
+  "category": "cloud-computing",
+  "category_name": "云计算",
+  "skill_name": "product-wuying-pc",
+  "priority": 100,
+  "keywords": [
+    "无影",
+    "无影云电脑",
+    "云电脑",
+    "wuying",
+    "无影pc",
+    "云pc",
+    "阿里无影",
+    "阿里云电脑"
+  ],
+  "description": "阿里无影云电脑解决方案",
+  "database_table": "product_wuying_pc",
+  "pricing_model": "per-unit-storage",
+  "version": "1.1.0"
+}

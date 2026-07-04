@@ -1,0 +1,20 @@
+{
+  "code": "humanoid-robot",
+  "name": "人形机器人",
+  "category": "artificial-intelligence",
+  "category_name": "人工智能",
+  "skill_name": "product-humanoid-robot",
+  "priority": 60,
+  "keywords": [
+    "人形机器人",
+    "机器人",
+    "humanoid",
+    "ai机器人",
+    "智能机器人",
+    "服务机器人"
+  ],
+  "description": "人形机器人解决方案",
+  "database_table": "product_humanoid_robot",
+  "pricing_model": "hardware-software-service",
+  "version": "1.0.0"
+}

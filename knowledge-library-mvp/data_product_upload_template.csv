@@ -1,0 +1,2 @@
+product_code,product_name,category_code,category_name,brand,model,unit,short_description,unit_price,currency,warehouse_code,inventory_quantity,reserved_quantity,safety_stock,spec_name,spec_value,spec_unit,spec_group,faq_question,faq_answer,tags
+P-DEMO-001,演示智能终端,CAT_IMPORTED,导入产品,HubAI,T-100,台,用于报价助手演示的智能终端,19999,CNY,WH-SH,30,2,5,屏幕尺寸,10.1,英寸,硬件参数,支持质保吗？,支持一年标准质保，可购买延保服务。,演示,质保

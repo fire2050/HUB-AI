@@ -1,0 +1,9 @@
+{
+  "name": "hubai-base",
+  "version": "1.0.0",
+  "author": "AI+比特虾",
+  "description": "HubAI 报价系统基础能力包",
+  "entry": "scripts/",
+  "dependencies": [],
+  "python_version": ">=3.8"
+}

@@ -1,0 +1,17 @@
+{
+  "code": "wuying-pc",
+  "name": "无影云电脑",
+  "skill_name": "product-wuying-pc",
+  "category": "computing",
+  "priority": 90,
+  "keywords": [
+    "无影",
+    "无影云电脑",
+    "云电脑",
+    "wuying",
+    "无影pc",
+    "云pc"
+  ],
+  "description": "无影云电脑解决方案",
+  "version": "1.0.0"
+}

@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HubAI 数字员工工作台</title>
+  <link rel="stylesheet" href="/static/style.css?v=202606241213" />
+</head>
+<body class="dashboard-body">
+  <div class="dashboard-shell">
+    <header class="top-header">
+      <div class="top-brand">
+        <span class="top-logo">🦐</span>
+        <div><strong>HubAI 企业知识库基础版</strong><small>Knowledge & Business Intelligence Base Edition</small></div>
+      </div>
+      <div class="top-actions"><span class="top-status">运行中 v0.2</span></div>
+    </header>
+
+    <aside class="sider" aria-label="左侧主菜单">
+      <div class="sider-section-title">数字员工</div>
+      <button type="button" class="sider-item active" data-page="finance" onclick="switchPage('finance')"><span class="sider-icon">📊</span><span class="sider-main">财务助理</span><span class="sider-sub">智能问数 / 报表 / 预警</span></button>
+      <button type="button" class="sider-item" data-page="commerce" onclick="switchPage('commerce')"><span class="sider-icon">💼</span><span class="sider-main">商务助理</span><span class="sider-sub">库存 / 订单 / 报价 / 合同</span></button>
+      <button type="button" class="sider-item" data-page="sales" onclick="switchPage('sales')"><span class="sider-icon">🚀</span><span class="sider-main">销售助理</span><span class="sider-sub">产品 / 客户 / 跟进 / 话术</span></button>
+      <button type="button" class="sider-item" data-page="tech" onclick="switchPage('tech')"><span class="sider-icon">🛠️</span><span class="sider-main">技术助理</span><span class="sider-sub">方案 / 技术 / 部署 / 售前</span></button>
+      <div class="sider-section-title">数据与系统</div>
+      <button type="button" class="sider-item" data-page="upload" onclick="switchPage('upload')"><span class="sider-icon">📁</span><span class="sider-main">原始数据上传</span><span class="sider-sub">右侧页面内上传</span></button>
+      <button type="button" class="sider-item" data-page="api" onclick="switchPage('api')"><span class="sider-icon">📖</span><span class="sider-main">API 页面</span><span class="sider-sub">接口清单 / 调试入口</span></button>
+      <div class="sider-user"><label for="userId">演示身份</label><select id="userId">{% for uid, user in users.items() %}<option value="{{ uid }}">{{ user.name }} · {{ user.role }} · {{ user.department or '全局' }}</option>{% endfor %}</select></div>
+    </aside>
+
+    <main class="main-content">
+      <section class="page-header-card">
+        <div><p id="pageEyebrow" class="eyebrow">Finance Assistant</p><h1 id="pageTitle">财务助理</h1><p id="pageDesc" class="page-desc">智能问数、报表输出、异常预警，自动按演示身份过滤权限范围。</p></div>
+        <div class="security-badge">🔒 RBAC 权限过滤 · SQLite + FTS5</div>
+      </section>
+
+      <section id="dynamicContent"></section>
+    </main>
+  </div>
+
+<script>
+const storagePaths = {{ storage_paths | tojson }};
+const pages = {
+  finance: {title:'财务助理', eyebrow:'Finance Assistant', desc:'智能问数、报表输出、异常预警，自动按演示身份过滤权限范围。', icon:'📊', capabilities:[['智能问数','销售额、回款、利润等经营指标查询'],['报表输出','按周期汇总经营表现与部门对比'],['预算执行追踪','跟踪目标完成度与预算执行率'],['异常预警','预算超标、回款不足等风险提醒']], examples:['查我上个月销售额','Q1 回款多少','今年目标完成度','各部门销售额对比','看看有没有异常预警']},
+  commerce: {title:'商务助理', eyebrow:'Commerce Assistant', desc:'库存查询、订单跟踪、报价辅助、合同检查，支撑商务运营闭环。', icon:'💼', capabilities:[['库存查询','查询产品可用库存、仓库分布与预留数量'],['订单跟踪','预留订单状态与交付进度接口'],['报价辅助','根据价格、折扣和库存生成报价草稿'],['合同检查','预留合同模板与风险检查能力']], examples:['P-AI-GW-001 库存多少','P-AI-GW-001 报价','P-AI-KB-002 报价','生成 P-AI-GW-001 的报价单']},
+  sales: {title:'销售助理', eyebrow:'Sales Assistant', desc:'产品问答、报价参考、客户跟进、销售话术。下方产品数据来自当前数据库，不再使用旧 HubAI 硬编码演示词。', icon:'🚀', capabilities:[['产品问答','产品参数、部署方式、FAQ 与卖点说明'],['报价参考','结合报价助手提供价格与库存参考'],['客户跟进','预留客户纪要与跟进建议能力'],['销售话术','面向客户场景生成沟通话术']], examples:['正在读取数据库产品...']}, 
+  tech: {title:'技术助理', eyebrow:'Technical Assistant', desc:'方案生成、技术应答、部署说明、售前支持，面向实施和技术售前场景。', icon:'🛠️', capabilities:[['方案生成','根据知识库生成技术方案或实施建议'],['技术应答','回答部署、接口、架构与集成问题'],['部署说明','提供本地化/私有云/混合云部署说明'],['售前支持','面向售前技术交流提供支撑材料']], examples:['怎么部署 HubAI 知识库','HubAI 网关支持哪些部署方式','怎么构建企业知识库','悟空系列中哪篇讲 RAG']},
+  upload: {title:'原始数据上传', eyebrow:'Data Intake', desc:'在右侧信息栏内完成文件上传，支持自动判断路径和手动选择存储路径。'},
+  api: {title:'API 页面', eyebrow:'API Console', desc:'在右侧信息栏展示基础版 API 清单与快速跳转，后续子页面保持统一后台风格。'}
+};
+let currentPage = 'finance';
+let salesProducts = [];
+function setHeader(key){ const p=pages[key]; document.getElementById('pageEyebrow').textContent=p.eyebrow; document.getElementById('pageTitle').textContent=p.title; document.getElementById('pageDesc').textContent=p.desc; document.querySelectorAll('.sider-item[data-page]').forEach(i=>i.classList.toggle('active', i.dataset.page===key)); }
+function switchPage(key){ currentPage=key; setHeader(key); if(['finance','commerce','sales','tech'].includes(key)) renderAssistant(key); if(key==='upload') renderUpload(); if(key==='api') renderApi(); }
+function renderAssistant(key){
+  const p=pages[key];
+  const salesForm = `<div class="quote-form-box">
+    <div class="quote-workflow-step">
+      <strong>报价第一步：请选择报价场景</strong>
+      <div class="quote-mode-row">
+        <button type="button" id="modeSingle" class="quote-mode active" onclick="setQuoteWorkflowMode('single')">单品价格查询</button>
+        <button type="button" id="modeDemand" class="quote-mode" onclick="setQuoteWorkflowMode('demand')">客户需求表三</button>
+      </div>
+      <p class="muted" id="quoteWorkflowHint">单品查询：确认产品类型和名称后直接输出报价。</p>
+    </div>
+    <div id="singleQuotePanel">
+      <div class="quote-table-title"><strong>单品价格查询</strong><span>确认产品类型、使用时间、产品名称后直接报价</span></div>
+      <table class="quote-input-table">
+        <thead><tr><th>产品类型</th><th>使用时间</th><th>当前产品</th><th>单价</th><th>数量</th><th>金额</th><th>操作</th></tr></thead>
+        <tbody><tr>
+          <td><select id="quoteProductType" onchange="loadSalesData()"><option value="compute">计算规格</option></select></td>
+          <td><select id="quotePriceType" onchange="loadSalesData()"><option value="1month">1个月</option></select></td>
+          <td><select id="quoteProductCode" onchange="syncQuoteFromSelectedProduct()"><option value="">读取产品中...</option></select></td>
+          <td><input id="quoteUnitPrice" value="0" readonly></td>
+          <td><input id="quoteQty" type="number" min="1" value="1" oninput="syncQuoteAmount()"></td>
+          <td><input id="quoteAmount" value="0" readonly></td>
+          <td><button type="button" onclick="askQuoteFromForm()">输出单品报价</button></td>
+        </tr></tbody>
+      </table>
+      <p class="muted" id="quoteHint">选择产品类型和使用时间后，下方当前可售产品会同步刷新。</p>
+    </div>
+    <div id="demandQuotePanel" style="display:none">
+      <div class="quote-table-title"><strong>客户需求表三</strong><span>客户需求报价单必须先完成客户需求表三，再进入报价；历史项目仅作参考</span></div>
+      <div class="requirement-form-grid">
+        <label>客户名称<input id="reqCustomerName" placeholder="例如：某某学校 / 某某公司"></label>
+        <label>联系人<input id="reqContactName" placeholder="客户联系人"></label>
+        <label>来源渠道<select id="reqSourceChannel"><option value="web">Web录入</option><option value="agent">Agent</option><option value="dingtalk">钉钉</option><option value="wecom">企微</option><option value="phone">电话</option><option value="wechat">微信</option><option value="email">邮件</option></select></label>
+        <label>客户期望时间<input id="reqExpectedTime" placeholder="例如：月底前 / 2026-07-15"></label>
+        <label>销售负责人<input id="reqSalesOwner" placeholder="例如：张三 / u_sales_zhang"></label>
+        <label>是否紧急<select id="reqUrgent"><option value="0">否</option><option value="1">是</option></select></label>
+        <label>是否已有历史项目<select id="reqHistorical"><option value="0">否</option><option value="1">是</option></select></label>
+        <label>输出内容<select id="reqOutputType"><option value="quotation">只要报价单</option><option value="proposal">只要方案</option><option value="both">方案 + 报价单</option></select></label>
+        <label class="full">附件/图片/文件链接<input id="reqAttachments" placeholder="可填写链接，多个用换行或逗号分隔"></label>
+        <label class="full">原始需求内容<textarea id="reqRaw" rows="5" placeholder="请粘贴客户原始需求，例如产品/数量/场景/预算/时间/交付要求等"></textarea></label>
+      </div>
+      <div class="requirement-actions"><button type="button" onclick="saveRequirementBeforeQuote()">保存需求表，进入报价准备</button></div>
+      <p class="muted">保存后状态为待人工确认。只有确认需求真实有效并指定负责人后，才进入正式客户需求报价单。历史项目仅用于参考，不作为报价规则。</p>
+    </div>
+    <input id="message" type="hidden" value="${p.examples[0]}">
+  </div>`;
+  const genericForm = `<div class="query-row"><input id="message" value="${p.examples[0]}"/><button onclick="ask()">发送</button></div>`;
+  document.getElementById('dynamicContent').innerHTML=`<section class="capability-grid-main">${p.capabilities.map(x=>`<div class="capability-card-main"><div class="capability-icon-main">${p.icon}</div><strong>${x[0]}</strong><p>${x[1]}</p></div>`).join('')}</section><section class="content-grid-main"><section class="business-card input-card"><div class="section-head"><h2>业务问题</h2><span>${p.title}</span></div>${key==='sales'?salesForm:genericForm}<div class="quick-chip-row">${p.examples.map(e=>`<button onclick="setExample('${e.replaceAll("'","\\'")}')">${e}</button>`).join('')}</div>${key==='sales'?'<div id="salesDataBox" class="sales-data-box">正在读取销售助理数据...</div>':''}</section><section class="business-card output-card-main"><div class="section-head"><h2>内容输出</h2><span id="intent">ready</span></div><pre id="answer">已切换到「${p.title}」。</pre></section></section>`;
+  if(key==='sales') loadSalesData();
+}
+function setQuoteWorkflowMode(mode){
+  const single=mode==='single';
+  document.getElementById('singleQuotePanel').style.display=single?'block':'none';
+  document.getElementById('demandQuotePanel').style.display=single?'none':'block';
+  document.getElementById('modeSingle').classList.toggle('active', single);
+  document.getElementById('modeDemand').classList.toggle('active', !single);
+  document.getElementById('quoteWorkflowHint').textContent=single
+    ? '单品查询：确认产品类型和名称后直接输出报价。'
+    : '客户需求报价单：必须先完成客户需求表三，保存后进入人工确认与正式报价；历史项目仅作参考。';
+  document.getElementById('salesDataBox').style.display=single?'block':'none';
+}
+async function saveRequirementBeforeQuote(){
+  const customer_name=document.getElementById('reqCustomerName').value.trim();
+  const raw_requirement=document.getElementById('reqRaw').value.trim();
+  if(!customer_name || !raw_requirement){
+    document.getElementById('intent').textContent='requirement · missing_fields';
+    document.getElementById('answer').textContent='请先填写客户名称和原始需求内容，再保存客户需求表。';
+    return;
+  }
+  const out=document.getElementById('reqOutputType').value;
+  const payload={
+    customer_name,
+    customer_contact_name:document.getElementById('reqContactName').value.trim(),
+    source_channel:document.getElementById('reqSourceChannel').value,
+    raw_requirement,
+    attachment_links:document.getElementById('reqAttachments').value.trim(),
+    customer_expected_time:document.getElementById('reqExpectedTime').value.trim(),
+    is_urgent:document.getElementById('reqUrgent').value==='1',
+    has_historical_project:document.getElementById('reqHistorical').value==='1',
+    sales_owner_user_id:document.getElementById('reqSalesOwner').value.trim(),
+    output_proposal_required:out==='proposal'||out==='both',
+    output_quotation_required:out==='quotation'||out==='both',
+    created_by:document.getElementById('userId').value
+  };
+  document.getElementById('intent').textContent='requirement · saving';
+  document.getElementById('answer').textContent='正在保存客户需求表...';
+  const res=await fetch('/api/order-requirements',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const data=await res.json();
+  document.getElementById('intent').textContent='requirement · saved';
+  document.getElementById('answer').textContent=`客户需求表三已保存：${data.requirement_no}\n入口：${data.source_channel||payload.source_channel}\n状态：${data.status}\n人工确认：${data.validation_status}\n历史项目规则：${data.history_usage||'仅作为报价参考，不作为报价规则。'}\n下一步：${data.next_step}`;
+}
+async function loadSalesData(){
+  const box=document.getElementById('salesDataBox');
+  const quoteTypeSel=document.getElementById('quoteProductType');
+  const quotePriceSel=document.getElementById('quotePriceType');
+  const sceneSel=document.getElementById('salesScenario');
+  const productType=quoteTypeSel?quoteTypeSel.value:'';
+  const priceType=quotePriceSel?quotePriceSel.value:'';
+  const scenario=sceneSel?sceneSel.value:'';
+  const res=await fetch(`/api/sales/demo-data?product_type=${encodeURIComponent(productType)}&scenario=${encodeURIComponent(scenario)}&price_type=${encodeURIComponent(priceType)}`);
+  const data=await res.json();
+  salesProducts=data.products||[];
+  const chips=document.querySelector('.quick-chip-row');
+  const productTypeOptions=(data.filters?.product_types||[]).filter(o=>o.value).map(o=>`<option value="${o.value}" ${o.value===(data.selected?.product_type||'')?'selected':''}>${o.label}</option>`).join('');
+  const priceTypeOptions=(data.filters?.price_types||[]).filter(o=>o.value).map(o=>`<option value="${o.value}" ${o.value===(data.selected?.price_type||'')?'selected':''}>${o.label}</option>`).join('');
+  const scenarioOptions=(data.filters?.scenarios||[]).map(o=>`<option value="${o.value}" ${o.value===(data.selected?.scenario||'')?'selected':''}>${o.label}</option>`).join('');
+  if(quoteTypeSel) quoteTypeSel.innerHTML=productTypeOptions;
+  if(quotePriceSel) quotePriceSel.innerHTML=priceTypeOptions;
+  const activePriceType=quotePriceSel?quotePriceSel.value:priceType;
+  const productSelect=document.getElementById('quoteProductCode');
+  if(productSelect){
+    productSelect.innerHTML=salesProducts.map(p=>`<option value="${p.product_code}">${p.product_name}</option>`).join('') || '<option value="">暂无产品</option>';
+    if(salesProducts[0]) productSelect.value=salesProducts[0].product_code;
+    syncQuoteFromSelectedProduct();
+  }
+  if(salesProducts.length){
+    chips.innerHTML=salesProducts.slice(0,6).map(p=>`<button onclick="selectSalesProduct('${p.product_code}')">${p.product_name}</button>`).join('');
+  } else {
+    chips.innerHTML='<button onclick="loadSalesData()">重新读取产品</button>';
+  }
+  box.innerHTML=`
+    <div class="sales-data-head">
+      <div><h3>当前可售产品（与业务问题同步）</h3><p class="muted">按上方产品类型和使用时间同步筛选，当前展示 ${data.count||0} 条。</p></div>
+      <div class="sales-filter-row">
+        <label>场景<select id="salesScenario" onchange="loadSalesData()">${scenarioOptions}</select></label>
+      </div>
+    </div>
+    <div class="product-list">
+      ${salesProducts.map(p=>`<div class="product-row ${document.getElementById('quoteProductCode')?.value===p.product_code?'active-product':''}">
+        <b>${p.product_name}</b>
+        <small>${p.product_type_name||p.product_type||''} · ${p.region_scope||''} · ${p.source_sheet||''}</small>
+        <small>${p.product_code} · 库存 ${p.available_quantity} · ${p.selected_billing_period||p.selected_price_type||'默认'}：${Number(p.unit_price||0).toFixed(2)} 元</small>
+        ${p.product_config_description?`<em>${String(p.product_config_description).slice(0,120)}${String(p.product_config_description).length>120?'…':''}</em>`:''}
+        <button onclick="selectSalesProduct('${p.product_code}')">选入表格</button><button onclick="setExample('${p.product_code} ${activePriceType==='1year'?'一年':''}报价')">报价</button>
+      </div>`).join('') || '<p class="muted">当前筛选条件下暂无产品，请切换产品类型、使用时间或场景。</p>'}
+    </div>`;
+}
+function currentSalesProduct(){ const code=document.getElementById('quoteProductCode')?.value; return salesProducts.find(p=>p.product_code===code) || salesProducts[0]; }
+function syncQuoteFromSelectedProduct(){
+  const p=currentSalesProduct();
+  const priceType=document.getElementById('quotePriceType')?.value || '';
+  const price=(p?.prices||[]).find(x=>x.price_type===priceType) || p?.selected_price || (p?.prices||[])[0];
+  const unit=Number(price?.unit_price || p?.unit_price || 0);
+  if(document.getElementById('quoteUnitPrice')) document.getElementById('quoteUnitPrice').value=unit.toFixed(2);
+  if(document.getElementById('message') && p) document.getElementById('message').value=`${p.product_code} ${priceType==='1year'?'一年':''}报价`;
+  syncQuoteAmount();
+}
+function syncQuoteAmount(){
+  const unit=Number(document.getElementById('quoteUnitPrice')?.value||0);
+  const qty=Number(document.getElementById('quoteQty')?.value||1);
+  if(document.getElementById('quoteAmount')) document.getElementById('quoteAmount').value=(unit*qty).toFixed(2);
+}
+function selectSalesProduct(code){
+  const sel=document.getElementById('quoteProductCode');
+  if(sel){ sel.value=code; syncQuoteFromSelectedProduct(); }
+}
+async function askQuoteFromForm(){
+  const p=currentSalesProduct();
+  if(!p) return;
+  const priceType=document.getElementById('quotePriceType')?.value||'1month';
+  const qty=Number(document.getElementById('quoteQty')?.value||1);
+  document.getElementById('message').value=`${p.product_code} ${priceType==='1year'?'一年':''} 报价 ${qty} 台`;
+  document.getElementById('intent').textContent='quotation · generating';
+  document.getElementById('answer').textContent='正在根据表格生成报价...';
+  const res=await fetch('/api/quotations/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer_code:'C001',created_by:document.getElementById('userId').value,items:[{product_code:p.product_code,qty,price_type:priceType}]})});
+  const data=await res.json();
+  document.getElementById('intent').textContent='quotation · table_generate';
+  document.getElementById('answer').textContent=data.markdown||JSON.stringify(data,null,2);
+}
+function renderUpload(){ document.getElementById('dynamicContent').innerHTML=`<section class="business-card"><div class="section-head"><h2>上传原始数据</h2><span>右侧子页面</span></div><div class="upload-layout-inline"><div><p class="muted">选择自动判断或手动指定路径。报价、价格、库存、商业版等文件会自动进入原始数据/03-报价库存。</p><div class="storage-list-inline"><button class="storage-item active" data-key="auto" onclick="selectStorage('auto')"><strong>自动判断路径</strong><small>auto</small><span>根据文件名关键词判断。</span></button>${Object.entries(storagePaths).map(([k,v])=>`<button class="storage-item" data-key="${k}" onclick="selectStorage('${k}')"><strong>${v.label}</strong><small>${v.path}</small><span>${v.desc}</span></button>`).join('')}</div></div><div class="upload-box-inline"><form id="uploadForm"><input type="hidden" id="storageKey" value="auto"><label>文件</label><input type="file" id="file" required><label class="checkline"><input type="checkbox" id="autoImport" checked><span>产品/报价 CSV 自动入库</span></label><button type="submit">上传</button></form><pre id="uploadResult">等待上传...</pre></div></div></section>`; bindUploadForm(); }
+function selectStorage(key){ document.getElementById('storageKey').value=key; document.querySelectorAll('.storage-item').forEach(i=>i.classList.toggle('active', i.dataset.key===key)); }
+function bindUploadForm(){ document.getElementById('uploadForm').addEventListener('submit', async e=>{ e.preventDefault(); const f=document.getElementById('file').files[0]; if(!f)return; const form=new FormData(); form.append('file',f); form.append('storage_key',document.getElementById('storageKey').value); form.append('auto_import',document.getElementById('autoImport').checked?'true':'false'); document.getElementById('uploadResult').textContent='上传中...'; const res=await fetch('/api/storage/upload',{method:'POST',body:form}); document.getElementById('uploadResult').textContent=JSON.stringify(await res.json(),null,2); }); }
+function renderApi(){ document.getElementById('dynamicContent').innerHTML=`<section class="business-card"><div class="section-head"><h2>API 页面</h2><span>统一后台风格</span></div><div class="api-grid api-grid-large"><a href="/docs" target="_blank"><strong>Swagger API 文档</strong><code>/docs</code></a><div><strong>统一对话</strong><code>POST /api/chat</code></div><div><strong>产品查询</strong><code>GET /api/products</code></div><div><strong>产品上传</strong><code>POST /api/products/upsert</code></div><div><strong>统一存储上传</strong><code>POST /api/storage/upload</code></div><div><strong>存储路径</strong><code>GET /api/storage/paths</code></div><div><strong>报价生成</strong><code>POST /api/quotations/generate</code></div><div><strong>库存查询</strong><code>GET /api/quotations/stock</code></div><div><strong>知识检索</strong><code>POST /api/knowledge/search</code></div><div><strong>销售数据</strong><code>GET /api/sales/demo-data</code></div></div></section>`; }
+function setExample(t){ document.getElementById('message').value=t; ask(); }
+async function ask(){ const msg=document.getElementById('message').value; const user_id=document.getElementById('userId').value; document.getElementById('intent').textContent='thinking...'; document.getElementById('answer').textContent='数字员工处理中...'; const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,user_id})}); const data=await res.json(); document.getElementById('intent').textContent=`${data.assistant||currentPage} · ${data.intent||'answer'}`; document.getElementById('answer').textContent=data.markdown||data.answer||JSON.stringify(data,null,2); }
+switchPage('finance');
+</script>
+</body>
+</html>

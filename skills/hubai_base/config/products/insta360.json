@@ -1,0 +1,20 @@
+{
+  "code": "insta360",
+  "name": "影石",
+  "category": "smart-hardware",
+  "category_name": "智能硬件",
+  "skill_name": "product-insta360",
+  "priority": 70,
+  "keywords": [
+    "影石",
+    "insta360",
+    "全景相机",
+    "运动相机",
+    "防抖相机",
+    "insta"
+  ],
+  "description": "影石Insta360全景相机解决方案",
+  "database_table": "product_insta360",
+  "pricing_model": "device-package",
+  "version": "1.0.0"
+}
